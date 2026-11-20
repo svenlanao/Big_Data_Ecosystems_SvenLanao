@@ -1,0 +1,12 @@
+services:
+  stocksense:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: stocksense-pyspark:1.0
+    container_name: stocksense-pyspark
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+    stdin_open: true
+    tty: true
