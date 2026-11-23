@@ -6,8 +6,8 @@ import os
 spark = SparkSession.builder.appName("StockSense_Data_Cleaning").master("local[*]").getOrCreate()
 
 base_path = "/workspace"
-input_path = os.path.join(base_path, "Data", "processed", "Online Retail.csv")
-output_path = os.path.join(base_path, "Data", "processed", "cleaned", "Online Retail.parquet")
+input_path = os.path.join(base_path, "Data", "processed", "Online Retail Inventory.csv")
+output_path = os.path.join(base_path, "Data", "processed", "cleaned", "Online Retail Inventory.parquet")
 
 #Read source CSV
 df = spark.read.csv(input_path, header=True, inferSchema=True, sep=";").cache()
