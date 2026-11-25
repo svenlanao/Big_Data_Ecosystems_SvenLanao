@@ -1,13 +1,12 @@
 
-from pyspark.sql import SparkSession
+from S3_config import create_spark_session
 from pyspark.sql.functions import (col,trim,upper,when,countDistinct,min as spark_min,coalesce,to_timestamp)
 import os
 
-spark = SparkSession.builder.appName("StockSense_Data_Cleaning").master("local[*]").getOrCreate()
+spark = create_spark_session("StockSense_Data_Cleaning")
 
-base_path = "/workspace"
-input_path = os.path.join(base_path, "Data", "processed", "Online Retail Inventory.csv")
-output_path = os.path.join(base_path, "Data", "processed", "cleaned", "Online Retail Inventory.parquet")
+input_path = "s3a://stocksense-data/processed/Online Retail Inventory.csv"
+output_path = "s3a://stocksense-data/processed/cleaned/Online Retail Inventory.parquet"
 
 #Read source CSV
 df = spark.read.csv(input_path, header=True, inferSchema=True, sep=";").cache()
@@ -60,7 +59,6 @@ print("\n========== PRICE CLASSIFICATION ==========")
 df_clean.groupBy("PriceStatus").count().show()
 
 #Save cleaned dataset as Parquet
-os.makedirs(os.path.dirname(output_path), exist_ok=True)
 df_clean.write.mode("overwrite").parquet(output_path)
 
 print("\n========== PARQUET OUTPUT ==========")

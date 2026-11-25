@@ -1,12 +1,10 @@
-from pyspark.sql import SparkSession
+from S3_config import create_spark_session
 from pyspark.sql.functions import col, sum, min, max, datediff, lit, round, when, first, desc, count
-import os
 
-spark = SparkSession.builder.appName("StockSense_Inventory_Analysis").master("local[*]").getOrCreate()
+spark = create_spark_session("StockSense_Inventory_Analysis")
 
-base_path = "/workspace"
-input_path = os.path.join(base_path, "Data", "processed", "cleaned", "Online Retail Inventory.parquet")
-output_path = os.path.join(base_path, "Data", "processed", "analysis")
+input_path = "s3a://stocksense-data/processed/cleaned/Online Retail Inventory.parquet"
+output_path = "s3a://stocksense-data/analysis"
 
 #Read enriched dataset
 df = spark.read.parquet(input_path)
@@ -62,13 +60,12 @@ risk_summary.show(truncate=False)
 print("\n========== PRODUCTS REQUIRING ATTENTION ==========")
 inventory_analysis.filter(col("StockoutRisk") != "LOW_RISK").orderBy(col("DaysOfInventory").asc_nulls_first()).show(100, truncate=False)
 
-#Save inventory analysis results
-os.makedirs(output_path, exist_ok=True)
-inventory_analysis.write.mode("overwrite").parquet(os.path.join(output_path, "inventory_risk.parquet"))
-risk_summary.write.mode("overwrite").parquet(os.path.join(output_path, "inventory_risk_summary.parquet"))
+#Save inventory analysis resultss
+inventory_analysis.write.mode("overwrite").parquet(f"{output_path}/inventory_risk.parquet")
+risk_summary.write.mode("overwrite").parquet(f"{output_path}/inventory_risk_summary.parquet")
 
 print("\nInventory analysis completed successfully.")
-print("Saved product analysis to:", os.path.join(output_path, "inventory_risk.parquet"))
-print("Saved risk summary to:", os.path.join(output_path, "inventory_risk_summary.parquet"))
+print("Saved product analysis to:", f"{output_path}/inventory_risk.parquet")
+print("Saved risk summary to:", f"{output_path}/inventory_risk_summary.parquet")
 
 spark.stop()

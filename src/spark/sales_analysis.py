@@ -1,12 +1,10 @@
-from pyspark.sql import SparkSession
+from S3_config import create_spark_session
 from pyspark.sql.functions import col, sum, countDistinct, date_format, desc, round
-import os
 
-spark = SparkSession.builder.appName("StockSense_Sales_Analysis").master("local[*]").getOrCreate()
+spark = create_spark_session("StockSense_Sales_Analysis")
 
-base_path = "/workspace"
-input_path = os.path.join(base_path, "Data", "processed", "cleaned", "Online Retail.parquet")
-output_path = os.path.join(base_path, "Data", "processed", "analysis")
+input_path = "s3a://stocksense-data/processed/cleaned/Online Retail Inventory.parquet"
+output_path = "s3a://stocksense-data/analysis"
 
 #Read cleaned dataset
 df = spark.read.parquet(input_path)
@@ -40,10 +38,9 @@ print("\n========== SALES BY COUNTRY ==========")
 country_sales.show(100, truncate=False)
 
 #Save analysis results
-os.makedirs(output_path, exist_ok=True)
-monthly_sales.write.mode("overwrite").parquet(os.path.join(output_path, "monthly_sales.parquet"))
-top_products.write.mode("overwrite").parquet(os.path.join(output_path, "top_products.parquet"))
-country_sales.write.mode("overwrite").parquet(os.path.join(output_path, "country_sales.parquet"))
+monthly_sales.write.mode("overwrite").parquet(f"{output_path}/monthly_sales.parquet")
+top_products.write.mode("overwrite").parquet(f"{output_path}/top_products.parquet")
+country_sales.write.mode("overwrite").parquet(f"{output_path}/country_sales.parquet")
 
 print("\nSales analysis completed successfully.")
 
