@@ -1,0 +1,10 @@
+FROM apache/airflow:slim-3.4.0-python3.12
+
+ARG AIRFLOW_VERSION=3.4.0
+ARG PYTHON_VERSION=3.12
+
+RUN pip install --no-cache-dir \
+    "apache-airflow-providers-postgres" \
+    "apache-airflow-providers-docker" \
+    "apache-airflow-providers-fab" \
+    --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
