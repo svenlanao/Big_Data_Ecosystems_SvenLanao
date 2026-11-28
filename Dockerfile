@@ -6,12 +6,10 @@ ENV JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ENV PYSPARK_PYTHON=python3
 
-RUN pip install --no-cache-dir pyspark==4.2.1
+RUN pip install --no-cache-dir pyspark==4.2.1 openpyxl==3.1.5
 
 ENV PYSPARK_SUBMIT_ARGS="--packages org.apache.hadoop:hadoop-aws:3.5.0,org.postgresql:postgresql:42.7.14 pyspark-shell"
 
 RUN python -c 'from pyspark.sql import SparkSession; s=SparkSession.builder.appName("S3A_DependencySetup").getOrCreate(); print("S3A dependencies downloaded successfully"); s.stop()'
 
 WORKDIR /workspace
-
-CMD ["bash"]

@@ -5,7 +5,7 @@ import os
 
 spark = create_spark_session("StockSense_Data_Cleaning")
 
-input_path = "s3a://stocksense-data/processed/Online Retail Inventory.csv"
+input_path = "s3a://stocksense-data/processed/ingested/Online Retail Inventory"
 output_path = "s3a://stocksense-data/processed/cleaned/Online Retail Inventory.parquet"
 
 #Read source CSV
